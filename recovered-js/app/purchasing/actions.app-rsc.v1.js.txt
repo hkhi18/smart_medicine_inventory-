@@ -1,0 +1,44 @@
+"[project]/app/purchasing/actions.js [app-rsc] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+/* __next_internal_action_entry_do_not_use__ [{"402fe8dce1044965254bfdde974b77cb078fd7946f":{"name":"decidePurchaseOrder"}},"app/purchasing/actions.js",""] */ __turbopack_context__.s([
+    "decidePurchaseOrder",
+    ()=>decidePurchaseOrder
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/server-reference.js [app-rsc] (ecmascript)");
+// Server Actions: a pharmacist approves or rejects purchase-order drafts.
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/cache.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/db.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$roles$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/lib/roles.js [app-rsc] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$audit$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/audit.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/action-validate.js [app-rsc] (ecmascript)");
+;
+;
+;
+;
+;
+async function decidePurchaseOrder(formData) {
+    const role = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$roles$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["currentRole"])();
+    if (!__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$roles$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["CAN"].approvePurchase(role)) throw new Error('Only a pharmacist can approve or reject purchase orders');
+    const id = Number(formData.get('id'));
+    const decision = String(formData.get('decision'));
+    if (![
+        'approved',
+        'rejected'
+    ].includes(decision)) throw new Error('Invalid decision');
+    const rows = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["query"])(`UPDATE purchase_orders SET status = $1, decided_by = $2, decided_at = now()
+     WHERE id = $3 AND status = 'awaiting_pharmacist' RETURNING qty, est_cost`, [
+        decision,
+        role,
+        id
+    ]);
+    if (rows.length) await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$audit$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["audit"])(role, `po_${decision}`, `purchase_order #${id}`, `${decision}: ${rows[0].qty} units, ${rows[0].est_cost} SAR`);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["revalidatePath"])('/purchasing');
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["revalidatePath"])('/');
+}
+;
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([
+    decidePurchaseOrder
+]);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(decidePurchaseOrder, "402fe8dce1044965254bfdde974b77cb078fd7946f", null);
+}),

@@ -1,0 +1,35 @@
+@font-face {
+    
+font-family: 'mono';
+    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22./fonts/jetbrains-mono-latin-400-normal.woff2%22,%22preload%22:true,%22has_size_adjust%22:true}') format('woff2');
+    font-display: swap;
+    
+font-weight: 400;
+}
+@font-face {
+    
+font-family: 'mono';
+    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22./fonts/jetbrains-mono-latin-500-normal.woff2%22,%22preload%22:true,%22has_size_adjust%22:true}') format('woff2');
+    font-display: swap;
+    
+font-weight: 500;
+}
+
+@font-face {
+    font-family: 'mono Fallback';
+    src: local("Arial");
+    ascent-override: 77.57%;
+descent-override: 22.82%;
+line-gap-override: 0.00%;
+size-adjust: 131.49%;
+
+}
+
+.className {
+    font-family: 'mono', 'mono Fallback';
+    
+}
+.variable {
+    --font-mono: 'mono', 'mono Fallback';
+}
+

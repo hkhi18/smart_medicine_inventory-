@@ -1,0 +1,26 @@
+"[project]/lib/roles-list.js [app-ssr] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+// Role list without server imports (safe to use in Client Components)
+__turbopack_context__.s([
+    "ROLES",
+    ()=>ROLES
+]);
+const ROLES = [
+    {
+        key: 'pharmacist',
+        label: 'pharmacist'
+    },
+    {
+        key: 'supply_chain',
+        label: 'supply chain'
+    },
+    {
+        key: 'viewer',
+        label: 'viewer'
+    }
+];
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__0wlck12._.js.map

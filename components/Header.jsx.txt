@@ -1,0 +1,35 @@
+// Server Component: reads the role cookie and the database mode on the server
+import Link from 'next/link';
+import NavLinks from './NavLinks';
+import RoleSelect from './RoleSelect';
+import { currentRole } from '@/lib/roles';
+import { dbMode } from '@/lib/db';
+import { ORG } from '@/lib/config';
+
+export default async function Header() {
+  const [role, mode] = await Promise.all([currentRole(), dbMode()]);
+  return (
+    <>
+      <div className="topbar">
+        <div className="container">
+          <span>{ORG.name} · {ORG.department}</span>
+          <span className="spacer" />
+          <span className="badge-version">v2.1.0 · {mode === 'pglite' ? 'PostgreSQL (embedded)' : 'PostgreSQL'}</span>
+          <RoleSelect role={role} />
+        </div>
+      </div>
+      <header className="header">
+       <div className="container" style={{ maxWidth: 1400, flexWrap: 'nowrap' }}>
+          <Link href="/" className="brand">
+         <img src="/kfshrc-logo.svg" alt="King Faisal Specialist Hospital & Research Centre" />
+            <span className="brand-text">
+              <strong>Smart Medicine Inventory</strong>
+              <span>Drug tracking &amp; data analysis</span>
+            </span>
+          </Link>
+          <NavLinks />
+        </div>
+      </header>
+    </>
+  );
+}

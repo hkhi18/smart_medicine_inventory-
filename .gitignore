@@ -1,0 +1,12 @@
+node_modules/
+.next/
+pgdata/
+.env
+node_modules/
+.next/
+pgdata/
+.env
+.env.local
+.env*.local
+start_tunnel.py
+*.log

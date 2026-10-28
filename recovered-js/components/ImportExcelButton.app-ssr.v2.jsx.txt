@@ -1,0 +1,158 @@
+"[project]/components/ImportExcelButton.jsx [app-ssr] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>ImportExcelButton
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-ssr] (ecmascript)");
+"use client";
+;
+;
+;
+function ImportExcelButton() {
+    const inputRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
+    const [job, setJob] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [message, setMessage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
+    function poll(jobId) {
+        const timer = setInterval(async ()=>{
+            try {
+                const res = await fetch(`/api/training/status?jobId=${jobId}`, {
+                    cache: "no-store"
+                });
+                const data = await res.json();
+                setJob(data);
+                if (data.status === "done") {
+                    clearInterval(timer);
+                    setMessage("Training finished. Dashboard updated.");
+                    router.refresh(); // reload server data automatically
+                }
+                if (data.status === "failed") {
+                    clearInterval(timer);
+                    setMessage(`Failed: ${data.error ?? "unknown error"}`);
+                }
+            } catch  {
+                clearInterval(timer);
+                setMessage("Lost connection to the server.");
+            }
+        }, 2000);
+    }
+    async function onFile(e) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setMessage("Uploading...");
+        setJob({
+            status: "uploading",
+            total: 0,
+            processed: 0
+        });
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("/api/import", {
+            method: "POST",
+            body: form
+        });
+        const data = await res.json();
+        e.target.value = "";
+        if (!res.ok) {
+            setJob(null);
+            setMessage(data.error ?? "Upload failed");
+            return;
+        }
+        setMessage(`Imported ${data.rows} rows. Training started...`);
+        poll(data.jobId);
+    }
+    const pct = job && job.total ? Math.round(job.processed / job.total * 100) : 0;
+    const busy = job?.status === "uploading" || job?.status === "training";
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        style: {
+            display: "inline-flex",
+            flexDirection: "column",
+            gap: 6
+        },
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                ref: inputRef,
+                type: "file",
+                accept: ".xlsx,.xls",
+                hidden: true,
+                onChange: onFile
+            }, void 0, false, {
+                fileName: "[project]/components/ImportExcelButton.jsx",
+                lineNumber: 67,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                className: "btn",
+                onClick: ()=>inputRef.current?.click(),
+                disabled: busy,
+                children: busy ? "Working..." : "Import Excel"
+            }, void 0, false, {
+                fileName: "[project]/components/ImportExcelButton.jsx",
+                lineNumber: 74,
+                columnNumber: 7
+            }, this),
+            job?.status === "training" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: {
+                            height: 6,
+                            background: "#e5e7eb",
+                            borderRadius: 3
+                        },
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            style: {
+                                width: `${pct}%`,
+                                height: 6,
+                                background: "#16a34a",
+                                borderRadius: 3
+                            }
+                        }, void 0, false, {
+                            fileName: "[project]/components/ImportExcelButton.jsx",
+                            lineNumber: 81,
+                            columnNumber: 13
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/components/ImportExcelButton.jsx",
+                        lineNumber: 80,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("small", {
+                        children: [
+                            "Training ",
+                            job.processed,
+                            " of ",
+                            job.total,
+                            " medicines (",
+                            pct,
+                            "%)"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/ImportExcelButton.jsx",
+                        lineNumber: 90,
+                        columnNumber: 11
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/ImportExcelButton.jsx",
+                lineNumber: 79,
+                columnNumber: 9
+            }, this),
+            message && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("small", {
+                children: message
+            }, void 0, false, {
+                fileName: "[project]/components/ImportExcelButton.jsx",
+                lineNumber: 95,
+                columnNumber: 19
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/components/ImportExcelButton.jsx",
+        lineNumber: 66,
+        columnNumber: 5
+    }, this);
+}
+}),

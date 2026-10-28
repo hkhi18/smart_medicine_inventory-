@@ -1,0 +1,13 @@
+"[project]/lib/metrics.js [app-rsc] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+// Accuracy for one medicine/model: never below 0
+__turbopack_context__.s([
+    "accuracyColor",
+    ()=>accuracyColor,
+    "accuracyFromMape",
+    ()=>accuracyFromMape
+]);
+const accuracyFromMape = (mape)=>Math.max(0, 100 - mape);
+const accuracyColor = (accuracy)=>accuracy >= 60 ? '#16a34a' : '#dc2626';
+}),

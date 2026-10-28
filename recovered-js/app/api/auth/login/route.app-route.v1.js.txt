@@ -1,0 +1,57 @@
+"[project]/app/api/auth/login/route.js [app-route] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "POST",
+    ()=>POST,
+    "dynamic",
+    ()=>dynamic,
+    "runtime",
+    ()=>runtime
+]);
+// POST /api/auth/login  { username, password, org }
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$users$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/users.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/session.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$audit$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/audit.js [app-route] (ecmascript)");
+;
+;
+;
+;
+const runtime = 'nodejs';
+const dynamic = 'force-dynamic';
+async function POST(req) {
+    const body = await req.json().catch(()=>({}));
+    const user = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$users$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["authenticate"])(body.username, body.password);
+    if (!user) {
+        try {
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$audit$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["audit"])(String(body.username || 'unknown').slice(0, 50), 'login_failed', 'session', 'Wrong user name or password');
+        } catch  {}
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: 'Wrong user name or password'
+        }, {
+            status: 401
+        });
+    }
+    if (body.org && body.org !== user.org) {
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: `This account belongs to ${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$users$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["ORGS"][user.org]}. Choose that organization.`
+        }, {
+            status: 403
+        });
+    }
+    try {
+        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$audit$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["audit"])(user.username, 'login', 'session', `Signed in (${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$users$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["ORGS"][user.org]})`);
+    } catch  {}
+    const res = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+        ok: true
+    });
+    res.cookies.set(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["COOKIE_NAME"], (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["createToken"])(user), {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["MAX_AGE_SECONDS"]
+    });
+    return res;
+}
+}),

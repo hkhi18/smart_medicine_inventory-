@@ -1,0 +1,7 @@
+"[project]/app/error.js [app-rsc] (ecmascript, Next.js Server Component)", (function(__turbopack_context__){
+
+__turbopack_context__.n(__turbopack_context__.i("[project]/app/error.js [app-rsc] (ecmascript)"));
+}),
+];
+
+//# sourceMappingURL=app_error_0cj3esw.js.map

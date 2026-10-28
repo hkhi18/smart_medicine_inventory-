@@ -1,0 +1,21 @@
+"[project]/app/api/medicines/[code]/route.js [app-route] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "GET",
+    ()=>GET
+]);
+// Route Handler (API endpoint): GET /api/medicines/MED-00001 -> JSON details of one medicine
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$queries$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/queries.js [app-route] (ecmascript)");
+;
+async function GET(request, { params }) {
+    const { code } = await params; // dynamic segment [code]
+    const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$queries$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getMedicineDetail"])(code);
+    if (!data) return Response.json({
+        error: 'Medicine not found'
+    }, {
+        status: 404
+    });
+    return Response.json(data);
+}
+}),

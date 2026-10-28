@@ -1,0 +1,42 @@
+"[project]/proxy.js [middleware] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "config",
+    ()=>config,
+    "proxy",
+    ()=>proxy
+]);
+// Runs before every request: visitors without a valid session are sent to /login.
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [middleware] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/session.js [middleware] (ecmascript)");
+;
+;
+function proxy(request) {
+    const { pathname } = request.nextUrl;
+    const session = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["verifyToken"])(request.cookies.get(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["COOKIE_NAME"])?.value);
+    const isPublic = pathname === '/login' || pathname.startsWith('/api/auth/');
+    if (!session && !isPublic) {
+        if (pathname.startsWith('/api/')) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: 'Not signed in'
+            }, {
+                status: 401
+            });
+        }
+        const url = new URL('/login', request.url);
+        if (pathname !== '/') url.searchParams.set('next', pathname);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(url);
+    }
+    if (session && pathname === '/login') return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL('/', request.url));
+    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].next();
+}
+const config = {
+    matcher: [
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:mp4|png|jpg|jpeg|svg|webp|ico|woff2?)$).*)'
+    ]
+};
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__1kvxb19._.js.map

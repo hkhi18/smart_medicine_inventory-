@@ -1,0 +1,22 @@
+{
+  "name": "smart-medicine-inventory",
+  "version": "2.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Smart Medicine Inventory - Next.js + PostgreSQL drug tracking, forecasting and data analysis",
+  "scripts": {
+    "seed": "node scripts/seed.mjs",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "next": "^16.3.8",
+    "pg": "^8.23.1",
+    "plotly.js-dist-min": "^4.1.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "xlsx": "^0.18.5"
+  }
+}

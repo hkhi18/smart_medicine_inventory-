@@ -1,0 +1,47 @@
+"[project]/lib/session.js [app-route] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "COOKIE_NAME",
+    ()=>COOKIE_NAME,
+    "MAX_AGE_SECONDS",
+    ()=>MAX_AGE_SECONDS,
+    "createToken",
+    ()=>createToken,
+    "verifyToken",
+    ()=>verifyToken
+]);
+// Signed session cookie (HMAC-SHA256). Uses only node:crypto, so it also works inside proxy.js.
+var __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$crypto__$5b$external$5d$__$28$node$3a$crypto$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/node:crypto [external] (node:crypto, cjs)");
+;
+const COOKIE_NAME = 'session';
+const MAX_AGE_SECONDS = 8 * 3600; // 8 hours
+const secret = ()=>process.env.AUTH_SECRET || 'dev-only-secret-change-me';
+const sign = (payload)=>__TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$crypto__$5b$external$5d$__$28$node$3a$crypto$2c$__cjs$29$__["default"].createHmac('sha256', secret()).update(payload).digest('base64url');
+function createToken(user) {
+    const payload = Buffer.from(JSON.stringify({
+        u: user.username,
+        n: user.full_name,
+        o: user.org,
+        exp: Date.now() + MAX_AGE_SECONDS * 1000
+    })).toString('base64url');
+    return payload + '.' + sign(payload);
+}
+function verifyToken(token) {
+    if (!token) return null;
+    const [payload, sig] = token.split('.');
+    if (!payload || !sig) return null;
+    const a = Buffer.from(sig);
+    const b = Buffer.from(sign(payload));
+    if (a.length !== b.length || !__TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$crypto__$5b$external$5d$__$28$node$3a$crypto$2c$__cjs$29$__["default"].timingSafeEqual(a, b)) return null;
+    try {
+        const data = JSON.parse(Buffer.from(payload, 'base64url').toString());
+        return data.exp && data.exp > Date.now() ? data : null;
+    } catch  {
+        return null;
+    }
+}
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__1ks61p9._.js.map

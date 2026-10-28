@@ -1,0 +1,98 @@
+"[project]/lib/replenishment.js [app-rsc] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+// Reorder point, coverage, projected stockout and status - computed in SQL from the
+// forecasts table and current lots. Called by the seed script and after every stock movement.
+//
+//   ROP              = forecast demand during lead time + z x RMSE x sqrt(L)
+//   Suggested order  = forecast for (lead time + 30-day review) + safety stock - on hand
+//   Coverage         = days until cumulative forecast demand exceeds on-hand stock
+//   Status priority  = stockout > below_rop > at_risk > insufficient_history > ok
+__turbopack_context__.s([
+    "AT_RISK_EXTRA_DAYS",
+    ()=>AT_RISK_EXTRA_DAYS,
+    "RECOMPUTE_SQL",
+    ()=>RECOMPUTE_SQL,
+    "REVIEW_PERIOD_DAYS",
+    ()=>REVIEW_PERIOD_DAYS,
+    "STATUS_ORDER_SQL",
+    ()=>STATUS_ORDER_SQL,
+    "recompute",
+    ()=>recompute
+]);
+const REVIEW_PERIOD_DAYS = 30;
+const AT_RISK_EXTRA_DAYS = 14;
+const RECOMPUTE_SQL = `
+WITH params AS (
+  SELECT (SELECT value::date FROM app_settings WHERE key = 'as_of') AS as_of
+),
+sel AS (
+  SELECT medicine_id, model, rmse FROM model_backtests WHERE is_selected
+),
+base AS (
+  SELECT m.id, m.lead_time_days AS l, m.service_z AS z, oh.on_hand, sel.model, sel.rmse
+  FROM medicines m
+  JOIN v_on_hand oh ON oh.medicine_id = m.id
+  LEFT JOIN sel ON sel.medicine_id = m.id
+  WHERE ($1::int IS NULL OR m.id = $1::int)
+),
+fc AS (
+  SELECT f.medicine_id, (f.day - p.as_of) AS k, f.qty,
+         SUM(f.qty) OVER (PARTITION BY f.medicine_id ORDER BY f.day) AS cum
+  FROM forecasts f, params p
+  WHERE ($1::int IS NULL OR f.medicine_id = $1::int)
+),
+agg AS (
+  SELECT b.id,
+         SUM(fc.qty) FILTER (WHERE fc.k <= b.l)                    AS lt_demand,
+         SUM(fc.qty) FILTER (WHERE fc.k <= b.l + ${REVIEW_PERIOD_DAYS}) AS ltr_demand,
+         SUM(fc.qty) FILTER (WHERE fc.k <= ${AT_RISK_EXTRA_DAYS})   AS d_extra,
+         AVG(fc.qty)                                               AS avg_daily,
+         MIN(fc.k)   FILTER (WHERE fc.cum > b.on_hand)             AS first_short
+  FROM base b LEFT JOIN fc ON fc.medicine_id = b.id
+  GROUP BY b.id
+),
+calc AS (
+  SELECT b.id, b.on_hand, b.model, b.rmse, b.z, b.l, a.lt_demand, a.ltr_demand, a.d_extra,
+         ROUND(b.z * b.rmse * SQRT(b.l))                          AS safety,
+         CASE WHEN a.first_short IS NOT NULL THEN a.first_short - 1
+              WHEN a.avg_daily > 0 THEN FLOOR(b.on_hand / a.avg_daily)
+              ELSE NULL END                                       AS coverage
+  FROM base b JOIN agg a ON a.id = b.id
+)
+INSERT INTO replenishment AS r (medicine_id, on_hand, model, lt_demand, rmse, z, safety_stock, rop,
+  suggested_order, coverage_days, projected_stockout, status, computed_at)
+SELECT c.id, c.on_hand, c.model, ROUND(c.lt_demand, 2), c.rmse, c.z, c.safety,
+       CEIL(c.lt_demand + c.safety),
+       GREATEST(0, CEIL(c.ltr_demand + c.safety - c.on_hand)),
+       c.coverage,
+       CASE WHEN c.coverage IS NULL THEN NULL ELSE (SELECT as_of FROM params) + (c.coverage::int + 1) END,
+       CASE
+         WHEN c.model IS NULL OR c.lt_demand IS NULL THEN
+           CASE WHEN c.on_hand <= 0 THEN 'stockout' ELSE 'insufficient_history' END
+         WHEN c.on_hand <= 0 THEN 'stockout'
+         WHEN c.on_hand < c.lt_demand + c.safety THEN 'below_rop'
+         WHEN c.on_hand < c.lt_demand + c.safety + c.d_extra THEN 'at_risk'
+         ELSE 'ok'
+       END,
+       now()
+FROM calc c
+ON CONFLICT (medicine_id) DO UPDATE SET
+  on_hand = EXCLUDED.on_hand, model = EXCLUDED.model, lt_demand = EXCLUDED.lt_demand,
+  rmse = EXCLUDED.rmse, z = EXCLUDED.z, safety_stock = EXCLUDED.safety_stock, rop = EXCLUDED.rop,
+  suggested_order = EXCLUDED.suggested_order, coverage_days = EXCLUDED.coverage_days,
+  projected_stockout = EXCLUDED.projected_stockout, status = EXCLUDED.status,
+  computed_at = EXCLUDED.computed_at
+`;
+const STATUS_ORDER_SQL = `CASE r.status
+  WHEN 'stockout' THEN 0 WHEN 'below_rop' THEN 1 WHEN 'at_risk' THEN 2
+  WHEN 'insufficient_history' THEN 3 ELSE 4 END`;
+async function recompute(db, medicineId = null) {
+    await db.query(RECOMPUTE_SQL, [
+        medicineId
+    ]);
+}
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__1rajlym._.js.map

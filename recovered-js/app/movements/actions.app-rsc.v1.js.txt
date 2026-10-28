@@ -1,0 +1,67 @@
+"[project]/app/movements/actions.js [app-rsc] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+/* __next_internal_action_entry_do_not_use__ [{"60f101b8866d83a906ad646fdf3f4a39950c67a315":{"name":"postMovementAction"}},"app/movements/actions.js",""] */ __turbopack_context__.s([
+    "postMovementAction",
+    ()=>postMovementAction
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/server-reference.js [app-rsc] (ecmascript)");
+// Server Action: validate the form, post the movement in one database transaction.
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/cache.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$roles$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/lib/roles.js [app-rsc] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$stock$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/stock.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/action-validate.js [app-rsc] (ecmascript)");
+;
+;
+;
+;
+async function postMovementAction(prevState, formData) {
+    const role = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$roles$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["currentRole"])();
+    if (!__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$roles$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["CAN"].postMovement(role)) return {
+        ok: false,
+        message: `Role "${role}" cannot post movements.`
+    };
+    const input = {
+        code: String(formData.get('code') || '').trim().toUpperCase(),
+        type: String(formData.get('type') || ''),
+        warehouse: String(formData.get('warehouse') || ''),
+        toWarehouse: String(formData.get('toWarehouse') || ''),
+        qty: Number(formData.get('qty')),
+        lotNo: String(formData.get('lotNo') || '').trim(),
+        expiry: String(formData.get('expiry') || '') || null,
+        note: String(formData.get('note') || '').trim(),
+        actor: role
+    };
+    if (!/^MED-\d{5}$/.test(input.code)) return {
+        ok: false,
+        message: 'Medicine code must look like MED-00001.'
+    };
+    if (!__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$stock$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["MOVEMENT_TYPES"].includes(input.type)) return {
+        ok: false,
+        message: 'Choose a movement type.'
+    };
+    if (!Number.isInteger(input.qty) || input.qty <= 0) return {
+        ok: false,
+        message: 'Quantity must be a whole number above 0.'
+    };
+    try {
+        const r = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$stock$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["postMovement"])(input);
+        (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["revalidatePath"])('/movements');
+        (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["revalidatePath"])('/');
+        return {
+            ok: true,
+            message: `${r.detail}. New status: ${r.status} (on hand ${r.onHand}).`
+        };
+    } catch (err) {
+        return {
+            ok: false,
+            message: err.message
+        }; // transaction rolled back - nothing saved
+    }
+}
+;
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([
+    postMovementAction
+]);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(postMovementAction, "60f101b8866d83a906ad646fdf3f4a39950c67a315", null);
+}),

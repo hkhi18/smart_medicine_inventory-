@@ -1,0 +1,59 @@
+@font-face {
+    
+font-family: 'poppins';
+    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22./fonts/poppins-latin-400-normal.woff2%22,%22preload%22:true,%22has_size_adjust%22:true}') format('woff2');
+    font-display: swap;
+    
+font-weight: 400;
+}
+@font-face {
+    
+font-family: 'poppins';
+    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22./fonts/poppins-latin-500-normal.woff2%22,%22preload%22:true,%22has_size_adjust%22:true}') format('woff2');
+    font-display: swap;
+    
+font-weight: 500;
+}
+@font-face {
+    
+font-family: 'poppins';
+    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22./fonts/poppins-latin-600-normal.woff2%22,%22preload%22:true,%22has_size_adjust%22:true}') format('woff2');
+    font-display: swap;
+    
+font-weight: 600;
+}
+@font-face {
+    
+font-family: 'poppins';
+    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22./fonts/poppins-latin-700-normal.woff2%22,%22preload%22:true,%22has_size_adjust%22:true}') format('woff2');
+    font-display: swap;
+    
+font-weight: 700;
+}
+@font-face {
+    
+font-family: 'poppins';
+    src: url('@vercel/turbopack-next/internal/font/local/font?{%22path%22:%22./fonts/poppins-latin-800-normal.woff2%22,%22preload%22:true,%22has_size_adjust%22:true}') format('woff2');
+    font-display: swap;
+    
+font-weight: 800;
+}
+
+@font-face {
+    font-family: 'poppins Fallback';
+    src: local("Arial");
+    ascent-override: 92.83%;
+descent-override: 30.94%;
+line-gap-override: 8.84%;
+size-adjust: 113.11%;
+
+}
+
+.className {
+    font-family: 'poppins', 'poppins Fallback';
+    
+}
+.variable {
+    --font-poppins: 'poppins', 'poppins Fallback';
+}
+

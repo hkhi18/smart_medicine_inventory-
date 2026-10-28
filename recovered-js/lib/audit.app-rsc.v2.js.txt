@@ -1,0 +1,22 @@
+"[project]/lib/audit.js [app-rsc] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "audit",
+    ()=>audit
+]);
+// Write one row to the audit log (who did what, to which record)
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/db.js [app-rsc] (ecmascript)");
+;
+async function audit(actor, action, entity, details) {
+    await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["query"])('INSERT INTO audit_log (actor, action, entity, details) VALUES ($1, $2, $3, $4)', [
+        actor,
+        action,
+        entity,
+        details
+    ]);
+}
+}),
+];
+
+//# sourceMappingURL=_1t0wm13._.js.map

@@ -1,0 +1,35 @@
+"[project]/proxy.js [middleware] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "config",
+    ()=>config,
+    "proxy",
+    ()=>proxy
+]);
+// Runs before every request: anyone without a valid session is sent to /login.
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [middleware] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/session.js [middleware] (ecmascript)");
+;
+;
+async function proxy(request) {
+    const { pathname } = request.nextUrl;
+    if (pathname.startsWith('/login') || pathname.startsWith('/api/auth')) return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].next();
+    const session = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["verifySession"])(request.cookies.get(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$session$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["COOKIE_NAME"])?.value);
+    if (session) return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].next();
+    if (pathname.startsWith('/api/')) return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].json({
+        error: 'Not signed in'
+    }, {
+        status: 401
+    });
+    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL('/login', request.url));
+}
+const config = {
+    matcher: [
+        '/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'
+    ]
+};
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__0i4i8he._.js.map

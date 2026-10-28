@@ -1,0 +1,84 @@
+"[project]/lib/users.js [app-route] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "ORGS",
+    ()=>ORGS,
+    "authenticate",
+    ()=>authenticate,
+    "createUser",
+    ()=>createUser
+]);
+// User accounts stored in PostgreSQL (table app_users). Passwords are salted scrypt hashes.
+var __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$crypto__$5b$external$5d$__$28$node$3a$crypto$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/node:crypto [external] (node:crypto, cjs)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/db.js [app-route] (ecmascript)");
+;
+;
+const ORGS = {
+    kfshrc: 'KFSHRC',
+    habib: 'Dr. Sulaiman Al Habib'
+};
+let tableReady = null;
+// Create the table once per server process
+function ensureUsersTable() {
+    if (!tableReady) {
+        tableReady = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["query"])(`CREATE TABLE IF NOT EXISTS app_users (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      full_name TEXT NOT NULL,
+      org TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT now()
+    )`).catch((err)=>{
+            tableReady = null;
+            throw err;
+        });
+    }
+    return tableReady;
+}
+function hashPassword(password) {
+    const salt = __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$crypto__$5b$external$5d$__$28$node$3a$crypto$2c$__cjs$29$__["default"].randomBytes(16);
+    const hash = __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$crypto__$5b$external$5d$__$28$node$3a$crypto$2c$__cjs$29$__["default"].scryptSync(password, salt, 64);
+    return salt.toString('hex') + ':' + hash.toString('hex');
+}
+function checkPassword(password, stored) {
+    const [salt, hash] = stored.split(':');
+    const expected = Buffer.from(hash, 'hex');
+    const actual = __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$crypto__$5b$external$5d$__$28$node$3a$crypto$2c$__cjs$29$__["default"].scryptSync(password, Buffer.from(salt, 'hex'), 64);
+    return actual.length === expected.length && __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$crypto__$5b$external$5d$__$28$node$3a$crypto$2c$__cjs$29$__["default"].timingSafeEqual(actual, expected);
+}
+async function createUser({ username, password, fullName, org }) {
+    await ensureUsersTable();
+    const name = String(username || '').trim().toLowerCase();
+    if (!/^[a-z0-9._-]{3,32}$/.test(name)) throw new Error('User name: 3-32 letters, numbers, dot, dash or underscore');
+    if (String(password || '').length < 8) throw new Error('Password must be at least 8 characters');
+    if (!ORGS[org]) throw new Error('Choose your organization');
+    const exists = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["query"])('SELECT 1 FROM app_users WHERE username = $1', [
+        name
+    ]);
+    if (exists.length) throw new Error('This user name is already taken');
+    const rows = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["query"])('INSERT INTO app_users (username, full_name, org, password_hash) VALUES ($1, $2, $3, $4) RETURNING username, full_name, org', [
+        name,
+        String(fullName || '').trim().slice(0, 80) || name,
+        org,
+        hashPassword(String(password))
+    ]);
+    return rows[0];
+}
+async function authenticate(username, password) {
+    await ensureUsersTable();
+    const rows = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["query"])('SELECT username, full_name, org, password_hash FROM app_users WHERE username = $1', [
+        String(username || '').trim().toLowerCase()
+    ]);
+    const user = rows[0];
+    if (!user || !checkPassword(String(password || ''), user.password_hash)) return null;
+    return {
+        username: user.username,
+        full_name: user.full_name,
+        org: user.org
+    };
+}
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__155ya_0._.js.map

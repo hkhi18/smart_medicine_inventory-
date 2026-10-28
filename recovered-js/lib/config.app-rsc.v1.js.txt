@@ -1,0 +1,13 @@
+"[project]/lib/config.js [app-rsc] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+// Organisation labels shown in the top bar (change them here)
+__turbopack_context__.s([
+    "ORG",
+    ()=>ORG
+]);
+const ORG = {
+    name: 'King Faisal Specialist Hospital & Research Centre',
+    department: 'Supply Chain & Data Analytics'
+};
+}),

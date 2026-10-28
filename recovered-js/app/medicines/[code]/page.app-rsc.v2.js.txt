@@ -1,0 +1,4 @@
+"[project]/app/medicines/[code]/page.js [app-rsc] (ecmascript, Next.js Server Component)", (function(__turbopack_context__){
+
+__turbopack_context__.n(__turbopack_context__.i("[project]/app/medicines/[code]/page.js [app-rsc] (ecmascript)"));
+}),

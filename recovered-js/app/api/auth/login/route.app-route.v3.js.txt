@@ -1,0 +1,44 @@
+"[project]/app/api/auth/login/route.js [app-route] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "POST",
+    ()=>POST,
+    "dynamic",
+    ()=>dynamic,
+    "runtime",
+    ()=>runtime
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/auth.js [app-route] (ecmascript)");
+(()=>{
+    const e = new Error("Cannot find module '@/lib/session'");
+    e.code = 'MODULE_NOT_FOUND';
+    throw e;
+})();
+;
+;
+;
+const runtime = 'nodejs';
+const dynamic = 'force-dynamic';
+async function POST(req) {
+    const form = await req.formData();
+    const username = String(form.get('username') || '').trim().toLowerCase();
+    const password = String(form.get('password') || '');
+    const user = username ? await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["findUser"])(username) : null;
+    if (!user || !(0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["verifyPassword"])(password, user.password_hash)) {
+        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["logAudit"])(username || 'unknown', 'login_failed', 'session', 'Wrong user name or password');
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL('/login?error=1', req.url), 303);
+    }
+    await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["logAudit"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["actorLabel"])(user), 'login', 'session', user.username);
+    const res = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL('/', req.url), 303);
+    res.cookies.set(COOKIE_NAME, await signSession(user.username), {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: ("TURBOPACK compile-time value", "development") === 'production',
+        path: '/',
+        maxAge: MAX_AGE_SECONDS
+    });
+    return res;
+}
+}),

@@ -1,0 +1,50 @@
+"[project]/lib/orgs.js [app-route] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "ORGS",
+    ()=>ORGS
+]);
+// One place for everything that differs between the two organizations:
+// logo, top-bar text and the CSS theme (colors + hero style).
+// Change the red values below to match the Al Habib website.
+const HABIB_THEME = `
+:root {
+  --green-900: #5a0b16;
+  --green-800: #75101f;
+  --green-700: #9c1326;
+  --green-600: #c8102e;
+  --green-500: #de2a45;
+  --green-100: #fbe3e7;
+  --green-50: #fff1f3;
+}
+.hero { background: linear-gradient(120deg, var(--green-900), var(--green-600)); }
+.hero-video, .hero-overlay { display: none; }
+.action-card:hover { background: #d8223d; }
+.info { border-color: #f1c9d0; }
+.explain { border-color: #efcdd3; }
+`;
+const ORGS = {
+    kfshrc: {
+        key: 'kfshrc',
+        name: 'King Faisal Specialist Hospital & Research Centre',
+        short: 'KFSHRC',
+        topbar: 'King Faisal Specialist Hospital & Research Centre · Supply Chain & Data Analytics',
+        logo: '/kfshrc-logo.svg',
+        hasLogo: true,
+        theme: ''
+    },
+    habib: {
+        key: 'habib',
+        name: 'Dr. Sulaiman Al Habib',
+        short: 'Al Habib',
+        topbar: 'Dr. Sulaiman Al Habib · Supply Chain & Data Analytics',
+        logo: '/habib-logo.svg',
+        hasLogo: false,
+        theme: HABIB_THEME
+    }
+};
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__1abnj6y._.js.map
