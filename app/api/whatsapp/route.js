@@ -82,7 +82,7 @@ export async function POST(request) {
 
     return twiml(messages);
   } catch (err) {
-    console.error(err);
+    console.error('WhatsApp webhook: bad Twilio signature. Expected URL:', url);
     return twiml('The assistant is unavailable right now. Please try again later.');
   }
 }
